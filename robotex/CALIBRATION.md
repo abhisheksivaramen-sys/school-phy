@@ -83,6 +83,13 @@ Using MicoAir's **MicoAssistant** tool, set the MTF-01 output protocol to **`mav
 Wire the MTF-01 to a serial port — these steps assume **TELEM2** (so `SERIAL2_*`). Mount it
 **pointing straight down**, lens unobstructed, rigid (no foam that lets it wobble).
 
+> **Which SERIALn is my MTF-01 on?** Map the physical port to the parameter prefix:
+> TELEM1→`SERIAL1`, TELEM2→`SERIAL2`, GPS→`SERIAL3`, GPS2→`SERIAL4`, and so on.
+> Your Mission Planner telemetry radio is usually on **TELEM1 (`SERIAL1`)**, so the MTF-01
+> should go on **TELEM2 (`SERIAL2`)** — use the `SERIAL2_*` params below. Quick check:
+> temporarily set that port's `SERIALn_PROTOCOL = 1` and see the flow data appear; if not,
+> you picked the wrong `n`. Trace the JST cable from the module to the labelled FC port.
+
 **B. Mission Planner parameters** (CONFIG → Full Parameter List). Assuming TELEM2:
 ```
 SERIAL2_PROTOCOL = 1        # MAVLink
@@ -127,6 +134,29 @@ ArduPilot "MicoAir MTF-01" + "Optical Flow Sensor Testing and Setup" docs.
 **PosHold** (flow position) once EKF is happy. **Do NOT rely on Loiter until the flow/rangefinder
 check in D passes.** For the autonomous run, the gate-detection guidance in `detect_pi.py`
 sends velocity commands on top of this stabilized platform.
+
+## Step 6.7 — CH8 autonomous handover (the "one switch" you wanted, done safely)
+A single switch cannot both auto-launch AND be manual at the same time — those are opposite
+states, and auto-arming on a flip with no throttle in your hand causes flyaways. The safe
+version that gives you what you actually want:
+
+1. **CH8 arm switch (optional, manual flying):** set `RC8_OPTION = 153` if you want CH8 to
+   arm/disarm for manual flights. (Skip if you use CH8 only for the Pi handover below.)
+2. **CH8 → Pi takes over (autonomous gate run):** the Raspberry Pi watches CH8 and does the
+   flying, so you keep instant override. Run on the Pi:
+   ```bash
+   python detect_pi.py --model best_ncnn_model --imgsz 416 \
+       --mavlink /dev/serial0 --baud 921600 --fly --ch8-handover --takeoff-alt 1.2
+   ```
+   - **CH8 HIGH** → Pi sets **GUIDED**, arms if needed, climbs to `--takeoff-alt`, then steers
+     through gates with the vision model.
+   - **CH8 LOW** → Pi commands **LOITER** (holds position on optical flow) and stops guiding —
+     you fly manually.
+   - **Always:** move your own flight-mode switch out of GUIDED on the transmitter and
+     ArduPilot hands control straight back to you. That is your override at all times.
+
+   Requirements for GUIDED to be safe indoors: optical flow + rangefinder **healthy**
+   (Step 6.5 verified), and `--fly` only after a props-off bench test of the whole sequence.
 
 ## Step 7 — Failsafes (do NOT skip on a competition drone)
 - **SETUP → Failsafe**: set **Battery Failsafe** (low-voltage → RTL/Land), **Radio Failsafe**
