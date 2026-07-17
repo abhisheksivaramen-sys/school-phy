@@ -1,0 +1,14 @@
+# Dataset config consumed by Ultralytics YOLO.
+# `prepare_dataset.py` fills `path` in automatically, but you can also edit it by hand.
+# Layout expected (created for you by prepare_dataset.py):
+#   dataset/
+#     images/train/*.jpg   images/val/*.jpg
+#     labels/train/*.txt   labels/val/*.txt
+
+path: ../dataset        # root of the dataset (relative to this file, or absolute)
+train: images/train
+val: images/val
+
+# We only care about one thing on the course: the gate.
+names:
+  0: gate
