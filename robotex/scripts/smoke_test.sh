@@ -18,7 +18,7 @@ echo "==> Train YOLOv8-nano (tiny run: 3 epochs, imgsz 320)"
 python train.py --epochs 3 --imgsz 320 --batch 8 --device cpu --name smoke_gate
 
 echo "==> Export to NCNN + ONNX"
-python export.py --weights runs/detect/smoke_gate/weights/best.pt --imgsz 320
+python export.py --weights ../runs/detect/smoke_gate/weights/best.pt --imgsz 320
 
 echo
 echo "SMOKE TEST PASSED — pipeline runs end to end and exports a Pi model."

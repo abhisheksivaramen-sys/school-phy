@@ -52,7 +52,7 @@ ssh pi@raspberrypi
 ### Copy your trained model to the Pi (over Tailscale)
 From your laptop, after training finishes:
 ```bash
-scp -r robotex/scripts/runs/detect/gate_yolov8n/weights/best_ncnn_model \
+scp -r robotex/runs/detect/gate_yolov8n/weights/best_ncnn_model \
        pi@100.101.102.103:~/robotex/
 scp robotex/scripts/detect_pi.py  pi@100.101.102.103:~/robotex/
 ```

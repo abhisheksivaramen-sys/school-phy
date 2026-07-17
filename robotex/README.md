@@ -9,9 +9,15 @@ detector (YOLO-World) auto-labels all your gate photos, and the nano learns from
 those labels. That's how you get an accurate model without hand-drawing
 thousands of boxes.
 
-> **Pipeline verified.** The full train → NCNN/ONNX export → on-Pi inference path
-> was run end-to-end and passes (see `scripts/smoke_test.sh`). What you supply is
-> your own gate photos; the scripts themselves are tested and working.
+> **What's actually been tested.** The code path was run end-to-end on a plain
+> x86 CPU and passes: synthetic data → train → **ONNX export** → **NCNN export**
+> → **local inference on the exported model** (see `scripts/verify_pipeline.sh`).
+> Two things could **not** be tested in that sandbox and you'll exercise them
+> yourself: (1) starting from pretrained `yolov8n.pt` — the download was blocked
+> there but works on any normal internet connection, so the verify run trained
+> from scratch instead; (2) anything on the **Raspberry Pi / MAVLink**, since no
+> drone hardware was attached. Those are standard, well-trodden paths — but treat
+> them as "should work", not "proven on your rig", until you run them.
 
 > ### Read this first — where things run
 > This code was written for you in a cloud session that **cannot reach your
@@ -55,7 +61,7 @@ Point it at the folder of gate images (your Downloads folder):
 ./run_all.sh  /path/to/Downloads/gate_images  416
 ```
 That auto-labels → splits → trains → exports. When it finishes, your Pi model is
-`scripts/runs/detect/gate_yolov8n/weights/best_ncnn_model/`.
+`robotex/runs/detect/gate_yolov8n/weights/best_ncnn_model/`.
 
 ### 1b. The step-by-step way (same thing, more control)
 ```bash
@@ -63,7 +69,7 @@ cd scripts
 python auto_label.py --images /path/to/gate_images --out ../dataset_raw --preview
 python prepare_dataset.py --raw ../dataset_raw --out ../dataset --val-split 0.2
 python train.py --epochs 120 --imgsz 640
-python export.py --weights runs/detect/gate_yolov8n/weights/best.pt --imgsz 640
+python export.py --weights ../runs/detect/gate_yolov8n/weights/best.pt --imgsz 640
 ```
 
 ### Sanity-check your labels (important!)
@@ -82,8 +88,8 @@ Good labels here = a good model. This 5-minute check is the highest-leverage ste
 
 ### 1. Copy the model over (from your laptop)
 ```bash
-scp -r scripts/runs/detect/gate_yolov8n/weights/best_ncnn_model  pi@<pi-ip>:~/robotex/
-scp scripts/detect_pi.py  robotex/requirements.txt  pi@<pi-ip>:~/robotex/
+scp -r runs/detect/gate_yolov8n/weights/best_ncnn_model  pi@<pi-ip>:~/robotex/
+scp scripts/detect_pi.py  requirements.txt  pi@<pi-ip>:~/robotex/
 ```
 
 ### 2. Install on the Pi

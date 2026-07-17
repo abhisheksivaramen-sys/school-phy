@@ -21,9 +21,9 @@ echo "==> 3/4  Training YOLOv8-nano"
 python train.py --imgsz "$IMGSZ"
 
 echo "==> 4/4  Exporting for the Raspberry Pi (NCNN + ONNX)"
-python export.py --weights runs/detect/gate_yolov8n/weights/best.pt --imgsz "$IMGSZ"
+python export.py --weights ../runs/detect/gate_yolov8n/weights/best.pt --imgsz "$IMGSZ"
 
 echo
 echo "DONE. Your Pi model is here:"
-echo "  scripts/runs/detect/gate_yolov8n/weights/best_ncnn_model/"
+echo "  robotex/runs/detect/gate_yolov8n/weights/best_ncnn_model/"
 echo "Copy it to the Pi and run detect_pi.py (see README)."

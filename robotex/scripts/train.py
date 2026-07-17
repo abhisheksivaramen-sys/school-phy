@@ -44,14 +44,21 @@ def main():
     if not data_path.exists():
         raise SystemExit(f"Config not found: {data_path} (run prepare_dataset.py first)")
 
+    # Save runs in a fixed, predictable place (robotex/runs/detect/<name>),
+    # regardless of which directory you launch from. Ultralytics otherwise
+    # resolves the output dir in a way that depends on its global settings.
+    project = (Path(__file__).resolve().parent.parent / "runs" / "detect")
+
     model = YOLO(args.model)
-    model.train(
+    result = model.train(
         data=str(data_path),
         epochs=args.epochs,
         imgsz=args.imgsz,
         batch=args.batch,
         device=args.device,
+        project=str(project),
         name=args.name,
+        exist_ok=True,
         patience=args.patience,
         # Augmentations that help a competition model generalise to changing
         # light / angles on the course:
@@ -61,11 +68,11 @@ def main():
         plots=True,
     )
 
-    best = Path("runs/detect") / args.name / "weights" / "best.pt"
+    best = Path(result.save_dir) / "weights" / "best.pt"
     print("\nTraining complete.")
-    print(f"  Best weights: {best.resolve() if best.exists() else best}")
+    print(f"  Best weights: {best}")
     print("  Validate visually: yolo predict model=<best.pt> source=<some_val_images>")
-    print("  Next: python export.py --weights", best)
+    print(f"  Next: python export.py --weights {best}")
 
 
 if __name__ == "__main__":

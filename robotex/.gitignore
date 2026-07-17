@@ -7,3 +7,7 @@ runs/
 *.pt
 *.onnx
 *_ncnn_model/
+.verify/
+smoke_raw/
+smoke_dataset/
+test_images/
