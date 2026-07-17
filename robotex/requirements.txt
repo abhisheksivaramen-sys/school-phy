@@ -1,0 +1,16 @@
+# Robotex gate-detection pipeline — install with:  pip install -r requirements.txt
+# Tested on Python 3.9–3.11.
+
+ultralytics>=8.3.0        # YOLOv8 training / export / inference
+opencv-python>=4.8.0      # image + video handling
+numpy>=1.24,<2.0
+pyyaml>=6.0
+tqdm>=4.66
+
+# --- Auto-labelling (the "bigger model" teacher). Install ONE of these on your laptop ---
+# YOLO-World ships inside ultralytics, so nothing extra is needed for the default flow.
+# If you prefer GroundingDINO instead, uncomment:
+# groundingdino-py>=0.4.0
+
+# --- Only needed ON the drone (Raspberry Pi) for MAVLink control ---
+# pymavlink>=2.4.41
