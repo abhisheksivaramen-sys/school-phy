@@ -9,6 +9,10 @@ detector (YOLO-World) auto-labels all your gate photos, and the nano learns from
 those labels. That's how you get an accurate model without hand-drawing
 thousands of boxes.
 
+> **Pipeline verified.** The full train → NCNN/ONNX export → on-Pi inference path
+> was run end-to-end and passes (see `scripts/smoke_test.sh`). What you supply is
+> your own gate photos; the scripts themselves are tested and working.
+
 > ### Read this first — where things run
 > This code was written for you in a cloud session that **cannot reach your
 > laptop, your Downloads folder, or your Raspberry Pi**. Nothing here trains
